@@ -1,0 +1,144 @@
+<h2>{L_ls_livestreams} <span class="badge">{LS_STREAM_COUNT}</span></h2>
+
+<div class="streamBoundaryContainer">
+	<!-- BEGIN stream_row -->
+	<div class="streamContainer {stream_row.ONLINE_CLASS}">
+		<div class="streamBackgroundContainer" style="background-image: url('{stream_row.BACKGROUND}')">
+		</div>
+		<div class="streamContentContainer" data-twitch-id="{stream_row.STREAM_ID}" onclick="<!-- IF S_OPEN_PLATFORM -->window.location='{stream_row.STREAM_LINK}'<!-- ELSE -->openTwitchEmbedded('{stream_row.STREAM_ID}', '{stream_row.STREAM_NAME}')<!-- ENDIF -->">
+			<div class="streamContentContainerInner">
+				<div class="streamHeader">
+					<div class="streamHeaderLeft">
+						<img src="{stream_row.STREAM_AVATAR}" />
+						{stream_row.STREAM_NAME}
+					</div>
+					<div class="streamHeaderRight">
+						<!-- IF stream_row.S_IS_LIVE --><i class="fa fa-eye"></i> {stream_row.STREAM_VIEWS} <!-- ENDIF -->
+						<!-- IF stream_row.S_IS_LIVE --> <i class="eqdkp-icon-online" style="background-color:red;"></i> LIVE <!-- ELSE --> <i class="eqdkp-icon-online" style="background-color:grey;"></i> offline <!-- ENDIF -->
+					</div>
+					<div class="clear"></div>
+				</div>
+				<div class="streamFooter">
+					<div class="streamFooterLeft">
+						<!-- IF stream_row.S_IS_LIVE -->
+						{stream_row.STREAM_GAME}, 
+						{stream_row.STREAM_START}
+						<!-- ENDIF -->
+					</div>
+					<div class="streamFooterRight">
+						<a href="{stream_row.STREAM_LINK}">{stream_row.STREAM_ICON}</a>
+					</div>
+					<div class="clear"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- END stream_row -->
+
+</div>
+
+<style>
+.streamBoundaryContainer {
+	display: flex;
+  	flex-direction: row;
+  	flex-wrap: wrap;
+}
+
+.streamContainer {
+	width: 360px;
+	height: 200px;
+	position: relative;
+	margin-right: 20px;
+	margin-bottom: 20px;
+}
+
+.streamBackgroundContainer {
+	width: 100%;
+	min-height: 100%;
+	min-width: 100%;
+	object-fit: cover;
+	background-clip: padding-box;
+	background-repeat: no-repeat;
+	background-position: center top;
+	background-size: cover !important;
+}
+
+.streamContentContainer {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	background: rgba(250,250,250,0.2);
+}
+
+.offline .streamContentContainer {
+	background: rgba(250,250,250,0.7);
+}
+
+.streamFooterRight, .streamHeaderRight {
+	float: right;
+	padding: 6px;
+}
+
+.streamFooterLeft, .streamHeaderLeft {
+	float: left;
+	padding: 6px;
+}
+
+.streamContentContainerInner {
+	position: relative;
+	height: 100%;
+	width: 100%;
+	cursor: pointer;
+}
+
+.streamFooter {
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	width: 100%;
+}
+
+.online .streamContentContainer .streamContentContainerInner .streamFooter, .online .streamContentContainer .streamContentContainerInner .streamHeader {
+	background: rgba(250,250,250,0.8);
+}
+
+.streamHeaderLeft img {
+ max-height: 22px;
+}
+</style>
+
+<script language="JavaScript" type="text/javascript">
+var isOpen = false;
+function openDialog(strChannelTitle){
+	if(isOpen) $( "#dialog-twitch-embedded" ).dialog('destroy');
+	$( "#dialog-twitch-embedded" ).dialog({
+		height:540,
+		width: 840,
+		modal: true,
+		autoOpen: true,
+		close: function(){
+			$('#dialog-twitch-embedded').html('');
+		},
+	});
+	
+	$( "#dialog-twitch-embedded" ).dialog('option', 'title', strChannelTitle);
+	
+	isOpen = true;
+}
+
+function openTwitchEmbedded(strChannelname, strChannelTitle){
+	$('#dialog-twitch-embedded').html('<iframe src="https://player.twitch.tv/?channel='+strChannelname+'" scrolling="no" frameborder="0" allowfullscreen="" style="height: 99%; width:100%"></iframe>');
+	openDialog(strChannelTitle);
+}
+
+<!-- IF SHOW_STREAMNAME != "" -->
+$(function(){
+	openTwitchEmbedded('{SHOW_STREAMNAME}', '{SHOW_STREAMNAME}');
+})
+<!-- ENDIF -->
+</script>
+<div id="dialog-twitch-embedded" title="">
+
+</div>
