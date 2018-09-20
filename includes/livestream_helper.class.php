@@ -37,7 +37,7 @@ class livestream_helper extends gen_class {
 		
 		foreach($arrUserIDs as $intUserID){
 			
-			$strTwitch = $this->pdh->get('user', 'profilefield_by_name', array($intUserID, 'twitch', false, true));
+			$strTwitch = trim($this->pdh->get('user', 'profilefield_by_name', array($intUserID, 'twitch', false, true)));
 			
 			if($strTwitch && $strTwitch != ""){
 				
@@ -55,10 +55,16 @@ class livestream_helper extends gen_class {
 			}
 		}
 		
-		$strAdditionalAccounts = $this->config->get('twitch_streams', 'livestreams');
-		$arrParts = explode("\r\n", $strAdditionalAccounts);
-		
+		$strAdditionalAccounts = $this->config->get('twitch_streams', 'livestreams');		
+		if(strlen($strAdditionalAccounts)){
+			$arrParts = explode("\r\n", $strAdditionalAccounts);
+		} else {
+			$arrParts = array();
+		}
 		foreach($arrParts as $strTwitch){
+			$strTwitch = trim($strTwitch);
+			if($strTwitch != "") continue;
+			
 			$arrAccounts[] = array(
 					'username' 		=> '',
 					'userlink' 		=> '',
@@ -91,41 +97,43 @@ class livestream_helper extends gen_class {
 		
 		$arrReturnData = array();
 		
-		//Query User Information
-		$mixRequest = register('urlfetcher')->fetch('https://api.twitch.tv/helix/users?login='.implode('&login=', $arrTwitchUsers), array('Client-ID: '.$this->strTwitchClientID));
-		
-		$arrUserIDToLogin = array();
-		
-		if ($mixRequest){
-			$arrResponseData = json_decode($mixRequest, true);
-			foreach($arrResponseData['data'] as $arrUserData){
-				$arrReturnData[$arrUserData['login']] = $arrUserData;
-				$arrUserIDToLogin[$arrUserData['id']] = $arrUserData['login'];
-			}
-		}
-		
-		//Query Stream Information
-		$arrGames = array();
-		$mixRequest = register('urlfetcher')->fetch('https://api.twitch.tv/helix/streams?user_login='.implode('&user_login=', $arrTwitchUsers), array('Client-ID: '.$this->strTwitchClientID));
-		if ($mixRequest){
-			$arrResponseData = json_decode($mixRequest, true);
-			foreach($arrResponseData['data'] as $arrStreamData){
-				$strLoginName = $arrUserIDToLogin[$arrStreamData['user_id']];
-				
-				$arrReturnData[$strLoginName]['stream_data'] = $arrStreamData;
-				$arrGames[$arrStreamData['game_id']] = $arrStreamData['game_id'];
-			}
-		}
-		
-		//Query Games Information
-		$mixRequest = register('urlfetcher')->fetch('https://api.twitch.tv/helix/games?id='.implode('&id=', $arrGames), array('Client-ID: '.$this->strTwitchClientID));
-		$arrGameIDs = array();
-		if ($mixRequest){
-			$arrResponseData = json_decode($mixRequest, true);
+		if(count($arrTwitchUsers)){
+			//Query User Information
+			$mixRequest = register('urlfetcher')->fetch('https://api.twitch.tv/helix/users?login='.implode('&login=', $arrTwitchUsers), array('Client-ID: '.$this->strTwitchClientID));
 			
-			foreach($arrResponseData['data'] as $arrGameData){
-				$arrGameIDs[$arrGameData['id']] = $arrGameData;
+			$arrUserIDToLogin = array();
+			
+			if ($mixRequest){
+				$arrResponseData = json_decode($mixRequest, true);
+				foreach($arrResponseData['data'] as $arrUserData){
+					$arrReturnData[$arrUserData['login']] = $arrUserData;
+					$arrUserIDToLogin[$arrUserData['id']] = $arrUserData['login'];
+				}
+			}
+			
+			//Query Stream Information
+			$arrGames = array();
+			$mixRequest = register('urlfetcher')->fetch('https://api.twitch.tv/helix/streams?user_login='.implode('&user_login=', $arrTwitchUsers), array('Client-ID: '.$this->strTwitchClientID));
+			if ($mixRequest){
+				$arrResponseData = json_decode($mixRequest, true);
+				foreach($arrResponseData['data'] as $arrStreamData){
+					$strLoginName = $arrUserIDToLogin[$arrStreamData['user_id']];
+					
+					$arrReturnData[$strLoginName]['stream_data'] = $arrStreamData;
+					$arrGames[$arrStreamData['game_id']] = $arrStreamData['game_id'];
+				}
+			}
+			
+			//Query Games Information
+			$mixRequest = register('urlfetcher')->fetch('https://api.twitch.tv/helix/games?id='.implode('&id=', $arrGames), array('Client-ID: '.$this->strTwitchClientID));
+			$arrGameIDs = array();
+			if ($mixRequest){
+				$arrResponseData = json_decode($mixRequest, true);
 				
+				foreach($arrResponseData['data'] as $arrGameData){
+					$arrGameIDs[$arrGameData['id']] = $arrGameData;
+					
+				}
 			}
 		}
 		

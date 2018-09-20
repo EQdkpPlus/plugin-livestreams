@@ -81,11 +81,13 @@ class livestreamsSettings extends page_generic
   	if ($objForm->error){
   		$this->arrData = $arrValues;
   	} else {  
-  		
+  		$messages = array();
 	  	// update configuration
 	    $this->config->set($arrValues, '', 'livestreams');
 	    // Success message
 	    $messages[] = $this->user->lang('ls_config_saved');
+	    
+	    $this->pdc->del_prefix('plugin.livestream.accounts.');
 	
 	    $this->display($messages);
   	}
