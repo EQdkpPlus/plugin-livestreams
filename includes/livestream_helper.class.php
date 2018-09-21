@@ -55,15 +55,16 @@ class livestream_helper extends gen_class {
 			}
 		}
 		
-		$strAdditionalAccounts = $this->config->get('twitch_streams', 'livestreams');		
+		$strAdditionalAccounts = $this->config->get('twitch_streams', 'livestreams');
 		if(strlen($strAdditionalAccounts)){
 			$arrParts = explode("\r\n", $strAdditionalAccounts);
 		} else {
 			$arrParts = array();
 		}
+		
 		foreach($arrParts as $strTwitch){
 			$strTwitch = trim($strTwitch);
-			if($strTwitch != "") continue;
+			if($strTwitch == "") continue;
 			
 			$arrAccounts[] = array(
 					'username' 		=> '',
