@@ -35,6 +35,7 @@ $lang = array(
 		'ls_config_saved'					=> 'The settings were successfully saved.',
 		'ls_livestreams'					=> 'Livestreams',
 		'ls_fs_general'						=> 'General',
+		'ls_fs_twitch'						=> 'Twitch',
 		'ls_f_twitch_streams'				=> 'Twitch-Streams',
 		'ls_f_help_twitch_streams'			=> 'Insert here additional Twitch-Streamer, one per line',
 		'ls_f_show_offline'					=> 'Show offline Streams',

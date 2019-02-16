@@ -35,6 +35,7 @@ $lang = array(
   'ls_config_saved'					=> 'Die Einstellungen wurden erfolgreich gespeichert.',
   'ls_livestreams'					=> 'Livestreams',
 	'ls_fs_general'					=> 'Allgemeines',
+	'ls_fs_twitch'					=> 'Twitch',
 	'ls_f_twitch_streams'			=> 'Twitch-Streams',
 	'ls_f_help_twitch_streams'		=> 'Trage hier zusätzliche Twitch-Streamuser ein, einer pro Zeile',
 	'ls_f_show_offline'				=> 'Zeige offline Streams',

@@ -28,7 +28,7 @@ if (!defined('EQDKP_INC')){
   +--------------------------------------------------------------------------*/
 class livestreams extends plugin_generic {
 
-	public $version				= '1.0.2';
+	public $version				= '1.0.3';
 	public $build				= '';
 	public $copyright			= 'GodMod';
 
@@ -111,6 +111,7 @@ class livestreams extends plugin_generic {
 	* Define Post Uninstall
 	*/
 	public function post_uninstall(){
+		$this->config->set('show_offline', 1, 'livestreams');
 	}
 
 	/**
