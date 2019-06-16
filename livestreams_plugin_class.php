@@ -28,7 +28,7 @@ if (!defined('EQDKP_INC')){
   +--------------------------------------------------------------------------*/
 class livestreams extends plugin_generic {
 
-	public $version				= '1.0.3';
+	public $version				= '1.0.4';
 	public $build				= '';
 	public $copyright			= 'GodMod';
 
@@ -61,7 +61,7 @@ class livestreams extends plugin_generic {
 		));
 
 		$this->add_permission('a', 'settings',		'N', $this->user->lang('menu_settings'),		array(2,3));
-		$this->add_permission('u', 'view',		'N', $this->user->lang('menu_settings'),		array(1,2,3));
+		$this->add_permission('u', 'view',		'N', $this->user->lang('view'),		array(1,2,3));
 
 		//Routing
 		$this->routing->addRoute('Livestreams', 'livestreams', 'plugins/livestreams/pageobjects');
