@@ -28,7 +28,7 @@ if (!defined('EQDKP_INC')){
   +--------------------------------------------------------------------------*/
 class livestreams extends plugin_generic {
 
-	public $version				= '1.0.4';
+	public $version				= '1.0.5';
 	public $build				= '';
 	public $copyright			= 'GodMod';
 

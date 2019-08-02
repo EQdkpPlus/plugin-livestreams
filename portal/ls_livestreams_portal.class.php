@@ -77,7 +77,7 @@ class ls_livestreams_portal extends portal_generic {
 			
 			$myOut .= '<div class="tr">';
 			
-			$myOut .= '<div class="td" style="width: 28px;">'.$link.'<img src="'.sanitize($arrStreamData['stream_avatar']).'" style="max-height: 24px;"/></a>';
+			$myOut .= '<div class="td" style="width: 28px;">'.$link.'<div class="user-avatar-small user-avatar-border"><img src="'.sanitize($arrStreamData['stream_avatar']).'" class="user-avatar small"/></div></a>';
 			$myOut .= '</div>';
 			
 			$myOut .= '<div class="td"><div>';
@@ -89,6 +89,7 @@ class ls_livestreams_portal extends portal_generic {
 			$myOut .= $link.sanitize($displayName).'</a>';
 			if($arrStreamData['stream_live']){
 				$myOut .= '<br/><span class="small" style="font-style:italic;">'.sanitize($arrStreamData['stream_game']).'</span>';
+				$myOut .= '<br/><span class="small">'.sanitize($arrStreamData['stream_viewer']).' '.$this->user->lang('ls_viewer').'</span>';
 			}
 			
 	

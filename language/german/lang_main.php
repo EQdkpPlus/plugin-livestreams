@@ -41,7 +41,8 @@ $lang = array(
 	'ls_f_show_offline'				=> 'Zeige offline Streams',
 	'ls_f_open_platform'			=> 'Öffne Streams direkt auf der jeweiligen Plattform',
 	'ls_f_twitch_clientid'			=> 'Twitch App Client-ID',
-	'ls_f_help_twitch_clientid'		=> 'Erstelle eine neue Anwendung auf https://glass.twitch.tv/console/apps und trage die Client-ID deiner Anwendung ein. Als Redirect-URL kannst du http://localhost eintragen.'
+	'ls_f_help_twitch_clientid'		=> 'Erstelle eine neue Anwendung auf https://dev.twitch.tv/console/apps und trage die Client-ID deiner Anwendung ein. Als Redirect-URL kannst du http://localhost eintragen.',
+	'ls_viewer'						=> 'Zuschauer',
  );
 
 ?>
