@@ -114,6 +114,12 @@ class livestreamsSettings extends page_generic
   						'type'		=> 'text',
   				),
   		),
+  		'mixer' => array(
+  				'mixer_streams' => array(
+  						'type'		=> 'textarea',
+  						'cols'		=> 80,
+  				),
+  		),
 
   	);
 

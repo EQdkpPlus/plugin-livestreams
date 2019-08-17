@@ -43,6 +43,9 @@ $lang = array(
 	'ls_f_twitch_clientid'			=> 'Twitch App Client-ID',
 	'ls_f_help_twitch_clientid'		=> 'Erstelle eine neue Anwendung auf https://dev.twitch.tv/console/apps und trage die Client-ID deiner Anwendung ein. Als Redirect-URL kannst du http://localhost eintragen.',
 	'ls_viewer'						=> 'Zuschauer',
+	'ls_fs_mixer'					=> 'Mixer',
+	'ls_f_mixer_streams'			=> 'Mixer-Streams',
+	'ls_f_help_mixer_streams'		=> 'Trage hier zusätzliche Mixer-Streamuser ein, einer pro Zeile',
  );
 
 ?>

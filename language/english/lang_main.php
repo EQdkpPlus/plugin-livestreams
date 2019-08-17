@@ -43,6 +43,9 @@ $lang = array(
 		'ls_f_twitch_clientid'				=> 'Twitch App Client-ID',
 		'ls_f_help_twitch_clientid'			=> 'Create a new App at https://dev.twitch.tv/console/apps and insert here the Client-ID. As Redirect-URL you can enter http://localhost.',
 		'ls_viewer'							=> 'Viewer',
+		'ls_fs_mixer'						=> 'Mixer',
+		'ls_f_mixer_streams'				=> 'Mixer-Streams',
+		'ls_f_help_mixer_streams'			=> 'Insert here additional Mixer-Streamer, one per line',
 );
 
 ?>

@@ -53,7 +53,7 @@ class livestreams_pageobject extends pageobject {
 		$objHelper = register('livestream_helper', array($this->config->get('twitch_clientid', 'livestreams')));
   	
 		$arrAccounts = $objHelper->getStreamAccounts();
-		$arrLiveStreamData = $objHelper->queryTwitch($arrAccounts);
+		$arrLiveStreamData = $objHelper->queryData($arrAccounts);
 		
 		$blnShowOffline = $this->config->get('show_offline', 'livestreams');
 
@@ -86,6 +86,7 @@ class livestreams_pageobject extends pageobject {
   			'S_SHOW_STREAM' => ($this->in->get('stream') != ""),
   			'SHOW_STREAMNAME' => sanitize($this->in->get('stream')),
   			'S_OPEN_PLATFORM' => $this->config->get('open_platform', 'livestreams'),
+  			'SHOW_STREAMTYPE' => sanitize($this->in->get('type')),
   		));
 
   		

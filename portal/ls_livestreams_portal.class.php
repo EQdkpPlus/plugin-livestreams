@@ -28,7 +28,7 @@ class ls_livestreams_portal extends portal_generic {
 	protected static $path		= 'livestreams';
 	protected static $data		= array(
 		'name'			=> 'Livestreams Module',
-		'version'		=> '0.1.0',
+		'version'		=> '0.2.0',
 		'author'		=> 'GodMod',
 		'contact'		=> EQDKP_PROJECT_URL,
 		'icon'			=> 'fa-video-camera',
@@ -58,7 +58,7 @@ class ls_livestreams_portal extends portal_generic {
 		$objHelper = register('livestream_helper', array($this->config->get('twitch_clientid', 'livestreams')));
 		
 		$arrAccounts = $objHelper->getStreamAccounts();
-		$arrLiveStreamData = $objHelper->queryTwitch($arrAccounts);
+		$arrLiveStreamData = $objHelper->queryData($arrAccounts);
 		
 		$blnShowOffline = $this->config('show_offline');
 		
@@ -77,7 +77,10 @@ class ls_livestreams_portal extends portal_generic {
 			
 			$myOut .= '<div class="tr">';
 			
-			$myOut .= '<div class="td" style="width: 28px;">'.$link.'<div class="user-avatar-small user-avatar-border"><img src="'.sanitize($arrStreamData['stream_avatar']).'" class="user-avatar small"/></div></a>';
+			$myOut .= '<div class="td" style="width: 28px;">'.$link.'<div class="user-avatar-small user-avatar-border">';
+			if($arrStreamData['stream_avatar']) $myOut .='<img src="'.sanitize($arrStreamData['stream_avatar']).'" class="user-avatar small"/>';
+			
+			$myOut .= '</div></a>';
 			$myOut .= '</div>';
 			
 			$myOut .= '<div class="td"><div>';

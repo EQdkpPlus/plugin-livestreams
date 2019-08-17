@@ -28,7 +28,7 @@ if (!defined('EQDKP_INC')){
   +--------------------------------------------------------------------------*/
 class livestreams extends plugin_generic {
 
-	public $version				= '1.0.5';
+	public $version				= '1.1.0';
 	public $build				= '';
 	public $copyright			= 'GodMod';
 
@@ -61,7 +61,7 @@ class livestreams extends plugin_generic {
 		));
 
 		$this->add_permission('a', 'settings',		'N', $this->user->lang('menu_settings'),		array(2,3));
-		$this->add_permission('u', 'view',		'N', $this->user->lang('view'),		array(1,2,3));
+		$this->add_permission('u', 'view',		'N', $this->user->lang('view'),		array(1,2,3,4));
 
 		//Routing
 		$this->routing->addRoute('Livestreams', 'livestreams', 'plugins/livestreams/pageobjects');
@@ -98,6 +98,29 @@ class livestreams extends plugin_generic {
 					'is_contact'	=> 1,
 					'contact_url' 	=> 'http://www.twitch.tv/%s',
 					'icon_or_image' => 'fa-twitch',
+					'bridge_field'	=> null,
+			);
+			
+			register('pdh')->put('user_profilefields', 'insert_field', array($arrOptions, array()));
+		}
+		
+		$intMixerFieldID = register('pdh')->get('user_profilefields', 'field_by_name', array('mixer'));
+		
+		//Create Twitch Profilefield
+		if(!$intMixerFieldID){
+			$arrOptions = array(
+					'name' 			=> 'Mixer',
+					'lang_var'		=> '',
+					'type' 			=> 'link',
+					'length'		=> 30,
+					'minlength' 	=> 3,
+					'validation'	=> '[\w_\.]+',
+					'required' 		=> 0,
+					'show_on_registration' => 0,
+					'enabled'		=> 1,
+					'is_contact'	=> 1,
+					'contact_url' 	=> 'https://www.mixer.com/%s',
+					'icon_or_image' => '../plugins/livestreams/images/mixer.png',
 					'bridge_field'	=> null,
 			);
 			
