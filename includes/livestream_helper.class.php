@@ -373,13 +373,12 @@ class livestream_helper extends gen_class {
 
 			}
 		}
-		
 		//Now combine the results
 			
 		foreach($arrAccounts as $key => $val){
 			if($val['stream_type'] != 'youtube') continue;
 			
-			if(isset($arrLiveData[$val['stream_username']]) && count($arrLiveData[$val['stream_username']]['items']) > 0){
+			if(isset($arrLiveData[$val['stream_username']]) && count($arrLiveData[$val['stream_username']]['items']) > 0 && $arrLiveData[$val['stream_username']]['items'][0]['snippet']['liveBroadcastContent'] == 'live'){
 				$arrTmpData = $arrLiveData[$val['stream_username']]['items'][0];
 				$intViewers = 0;
 				
