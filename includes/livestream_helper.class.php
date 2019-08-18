@@ -23,14 +23,12 @@ class livestream_helper extends gen_class {
 	
 	private $strTwitchClientID = "xz3zsp1i87vb6l4uw8fj40rvhzcvvm";
 	private $strYoutubeClientID = "";
-	private $intTwitchCacheMinutes = 5;
-	private $intYoutubeCacheMinutes = 5;
+	private $intCacheMinutes = 5;
 	
 	public function __construct(){		
 		$strTwitchClientID = $this->config->get('twitch_clientid', 'livestreams');
 		if($strTwitchClientID && $strTwitchClientID != "") {
 			$this->strTwitchClientID = $strTwitchClientID;
-			$this->intTwitchCacheMinutes = 1;
 		}
 		
 		$strYoutubeClientID = $this->config->get('youtube_clientid', 'livestreams');
@@ -185,7 +183,7 @@ class livestream_helper extends gen_class {
 		
 		$arrAccounts = $this->queryTwitch($arrAccounts);
 		$arrAccounts = $this->queryMixer($arrAccounts);
-		$arrAccounts = $this->queryYoutube($arrAccounts);
+		if($this->strYoutubeClientID != "") $arrAccounts = $this->queryYoutube($arrAccounts);
 		
 		$arrSortOnline = $arrSortUsername = array();
 		foreach($arrAccounts as $key => $val){
@@ -195,8 +193,7 @@ class livestream_helper extends gen_class {
 		
 		array_multisort($arrSortOnline, SORT_DESC, SORT_NUMERIC, $arrSortUsername, SORT_ASC, SORT_REGULAR, $arrAccounts);
 		
-		
-		$this->pdc->put('plugin.livestream.accounts.'.$this->user->id,$arrAccounts,(60*$this->intTwitchCacheMinutes));
+		$this->pdc->put('plugin.livestream.accounts.'.$this->user->id,$arrAccounts,(60*$this->intCacheMinutes));
 		
 		return $arrAccounts;
 	}
