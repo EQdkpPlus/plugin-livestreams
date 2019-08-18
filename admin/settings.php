@@ -120,6 +120,15 @@ class livestreamsSettings extends page_generic
   						'cols'		=> 80,
   				),
   		),
+  			'youtube' => array(
+  					'youtube_streams' => array(
+  							'type'		=> 'textarea',
+  							'cols'		=> 80,
+  					),
+  					'youtube_clientid' => array(
+  							'type'		=> 'text',
+  					),
+  			),
 
   	);
 

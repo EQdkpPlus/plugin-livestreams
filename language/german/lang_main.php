@@ -46,6 +46,11 @@ $lang = array(
 	'ls_fs_mixer'					=> 'Mixer',
 	'ls_f_mixer_streams'			=> 'Mixer-Streams',
 	'ls_f_help_mixer_streams'		=> 'Trage hier zusätzliche Mixer-Streamuser ein, einer pro Zeile',
+	'ls_fs_youtube'					=> 'YouTube',
+	'ls_f_youtube_streams'			=> 'YouTube-Streams',
+	'ls_f_help_youtube_streams'		=> 'Trage hier zusätzliche Youtube-Kanäle ein, einer pro Zeile',
+	'ls_f_youtube_clientid'			=> 'YouTube API-Schlüssel',
+	'ls_f_help_youtube_clientid'	=> 'Erstelle unter https://console.developers.google.com/apis/ ein neues Projekt und aktiviere "YouTube Data API v3" für dein Projekt. Erstelle anschließend Anmeldedaten und füge den API-Schlüssel in dieses Feld ein.',
  );
 
 ?>

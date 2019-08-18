@@ -5,7 +5,7 @@
 	<div class="streamContainer {stream_row.ONLINE_CLASS}">
 		<div class="streamBackgroundContainer" style="background-image: url('{stream_row.BACKGROUND}')">
 		</div>
-		<div class="streamContentContainer" data-twitch-id="{stream_row.STREAM_ID}" onclick="<!-- IF S_OPEN_PLATFORM -->window.location='{stream_row.STREAM_LINK}'<!-- ELSE -->openEmbedded('{stream_row.STREAM_ID}', '{stream_row.STREAM_NAME}', '{stream_row.STREAM_TYPE}')<!-- ENDIF -->">
+		<div class="streamContentContainer" data-twitch-id="{stream_row.STREAM_ID}" onclick="<!-- IF S_OPEN_PLATFORM -->window.location='{stream_row.STREAM_LINK}'<!-- ELSE -->openEmbedded('{stream_row.STREAM_VIDEOID}', '{stream_row.STREAM_NAME}', '{stream_row.STREAM_TYPE}')<!-- ENDIF -->">
 			<div class="streamContentContainerInner">
 				<div class="streamHeader">
 					<div class="streamHeaderLeft">
@@ -135,12 +135,15 @@ function openEmbedded(strChannelname, strChannelTitle, strChannelType){
 	if(strChannelType == 'mixer'){
 		$('#dialog-twitch-embedded').html('<iframe src="https://mixer.com/embed/player/'+strChannelname+'" scrolling="no" frameborder="0" allowfullscreen="" style="height: 99%; width:100%"></iframe>');
 	}
+	if(strChannelType == 'youtube'){
+		$('#dialog-twitch-embedded').html('<iframe src="https://www.youtube.com/embed/live_stream?channel='+strChannelname+'&autoplay=1" scrolling="no" frameborder="0" allowfullscreen="" style="height: 99%; width:100%"></iframe>');
+	}
 	openDialog(strChannelTitle);
 }
 
 <!-- IF SHOW_STREAMNAME != "" -->
 $(function(){
-	openEmbedded('{SHOW_STREAMNAME}', '{SHOW_STREAMNAME}', '{SHOW_STREAMTYPE}');
+	openEmbedded('{SHOW_STREAMVIDEOID}', '{SHOW_STREAMNAME}', '{SHOW_STREAMTYPE}');
 })
 <!-- ENDIF -->
 </script>

@@ -22,13 +22,23 @@
 class livestream_helper extends gen_class {
 	
 	private $strTwitchClientID = "xz3zsp1i87vb6l4uw8fj40rvhzcvvm";
-	private $intCacheMinutes = 5;
+	private $strYoutubeClientID = "";
+	private $intTwitchCacheMinutes = 5;
+	private $intYoutubeCacheMinutes = 5;
 	
-	public function __construct($strTwitchClientID){
+	public function __construct(){		
+		$strTwitchClientID = $this->config->get('twitch_clientid', 'livestreams');
 		if($strTwitchClientID && $strTwitchClientID != "") {
 			$this->strTwitchClientID = $strTwitchClientID;
-			$this->intCacheMinutes = 1;
+			$this->intTwitchCacheMinutes = 1;
 		}
+		
+		$strYoutubeClientID = $this->config->get('youtube_clientid', 'livestreams');
+		if($strYoutubeClientID && $strYoutubeClientID != "") {
+			$this->strYoutubeClientID = $strYoutubeClientID;
+		}
+		
+		
 	}
 	
 	public function getStreamAccounts(){
@@ -68,6 +78,29 @@ class livestream_helper extends gen_class {
 						'stream_link'		=> 'https://mixer.com/'.str_replace('https://mixer.com/', '', sanitize(utf8_strtolower($strMixer))),
 						'stream_username' 	=> str_replace('https://mixer.com/', '', utf8_strtolower($strMixer)),
 						'stream_username_display' => str_replace('https://mixer.com/', '', utf8_strtolower($strMixer)),
+				);
+			}
+			
+			$strYoutube = trim($this->pdh->get('user', 'profilefield_by_name', array($intUserID, 'youtube', false, true)));
+			
+			if($strYoutube && $strYoutube != ""){
+				
+				$strUsername = $this->pdh->get('user', 'name', array($intUserID));
+				
+				if(strpos($strYoutube, 'UC') === 0){
+					$strYoutubeLink = "https://www.youtube.com/channel/".$strYoutube;
+				} else {
+					$strYoutubeLink = "https://www.youtube.com/user/".$strYoutube;
+				}
+				
+				$arrAccounts[] = array(
+						'username' 					=> $strUsername,
+						'userlink' 					=> $this->routing->build('user', $strUsername, 'u'.$intUserID),
+						'stream_type'				=> 'youtube',
+						'stream_icon'				=> '<i class="fa fa-youtube" title="YouTube"></i>',
+						'stream_link'				=> $strYoutubeLink,
+						'stream_username' 			=> $strYoutube,
+						'stream_username_display'	=> $strYoutube,
 				);
 			}
 		}
@@ -114,6 +147,33 @@ class livestream_helper extends gen_class {
 			);
 		}
 		
+		$strAdditionalAccounts = $this->config->get('youtube_streams', 'livestreams');
+		if(strlen($strAdditionalAccounts)){
+			$arrParts = explode("\r\n", $strAdditionalAccounts);
+		} else {
+			$arrParts = array();
+		}
+		
+		foreach($arrParts as $strYoutube){
+			$strYoutube = trim($strYoutube);
+			if($strYoutube == "") continue;
+			
+			if(strpos($strYoutube, 'UC') === 0){
+				$strYoutubeLink = "https://www.youtube.com/channel/".$strYoutube;
+			} else {
+				$strYoutubeLink = "https://www.youtube.com/user/".$strYoutube;
+			}
+			
+			$arrAccounts[] = array(
+					'username' 		=> '',
+					'userlink' 		=> '',
+					'stream_type'		=> 'youtube',
+					'stream_icon'		=> '<i class="fa fa-youtube" title="YouTube"></i>',
+					'stream_link'		=> $strYoutubeLink,
+					'stream_username' 	=> $strYoutube,
+			);
+		}
+		
 		return $arrAccounts;
 	}
 	
@@ -125,6 +185,7 @@ class livestream_helper extends gen_class {
 		
 		$arrAccounts = $this->queryTwitch($arrAccounts);
 		$arrAccounts = $this->queryMixer($arrAccounts);
+		$arrAccounts = $this->queryYoutube($arrAccounts);
 		
 		$arrSortOnline = $arrSortUsername = array();
 		foreach($arrAccounts as $key => $val){
@@ -135,7 +196,7 @@ class livestream_helper extends gen_class {
 		array_multisort($arrSortOnline, SORT_DESC, SORT_NUMERIC, $arrSortUsername, SORT_ASC, SORT_REGULAR, $arrAccounts);
 		
 		
-		$this->pdc->put('plugin.livestream.accounts.'.$this->user->id,$arrAccounts,(60*$this->intCacheMinutes));
+		$this->pdc->put('plugin.livestream.accounts.'.$this->user->id,$arrAccounts,(60*$this->intTwitchCacheMinutes));
 		
 		return $arrAccounts;
 	}
@@ -165,8 +226,6 @@ class livestream_helper extends gen_class {
 		
 		
 		//Now combine the results
-
-		$arrSortOnline = $arrSortUsername = array();
 		
 		foreach($arrAccounts as $key => $val){
 			if($val['stream_type'] != 'mixer') continue;
@@ -249,8 +308,6 @@ class livestream_helper extends gen_class {
 			
 		}
 
-		$arrSortOnline = $arrSortUsername = array();
-		
 		foreach($arrAccounts as $key => $val){
 			if($val['stream_type'] != 'twitch') continue;
 			$arrAccounts[$key]['stream_data'] = $arrReturnData[$val['stream_username']];
@@ -269,5 +326,94 @@ class livestream_helper extends gen_class {
 		
 	}
 	
+	function queryYoutube($arrAccounts){		
+		$arrYoutubeUsers = array();
+		foreach($arrAccounts as $arrData){
+			if($arrData['stream_type'] != 'youtube') continue;
+			
+			$arrYoutubeUsers[] = $arrData['stream_username'];
+		}
+		
+		$arrYoutubeUsers = array_unique($arrYoutubeUsers);
+		
+		$arrReturnData = array();
+		
+		if(count($arrYoutubeUsers)){
+			$arrChannelData = $arrLiveData = array();
+			foreach($arrYoutubeUsers as $strYoutube){
+				
+				if(strpos($strYoutube, 'UC') === 0){
+					$mixRequest = register('urlfetcher')->fetch('https://www.googleapis.com/youtube/v3/search?order=date&maxResults=1&type=video&eventType=live&safeSearch=none&videoEmbeddable=true&channelId='.$strYoutube.'&part=snippet&key='.$this->strYoutubeClientID);
+					if($mixRequest){
+						$arrLiveData[$strYoutube] = json_decode($mixRequest, true);
+						
+						if(count($arrLiveData[$strYoutube]['items']) == 0) {
+							//Get some channel infos
+							$mixRequest = register('urlfetcher')->fetch('https://www.googleapis.com/youtube/v3/channels?key='.$this->strYoutubeClientID.'&id='.$strYoutube.'&part=snippet');
+							if($mixRequest){
+								$arrChannelData[$strYoutube] = json_decode($mixRequest, true);
+							}
+							
+						}
+					}					
+				} else {
+					$mixRequest = register('urlfetcher')->fetch('https://www.googleapis.com/youtube/v3/channels?key='.$this->strYoutubeClientID.'&forUsername='.$strYoutube.'&part=snippet');
+					if($mixRequest){
+						$arrChannelData[$strYoutube] = json_decode($mixRequest, true);
+						$strChannelID = $arrChannelData[$strYoutube]['items'][0]['id'];
+						if(!$strChannelID) continue;
+						
+						$mixRequest = register('urlfetcher')->fetch('https://www.googleapis.com/youtube/v3/search?order=date&maxResults=1&type=video&eventType=live&safeSearch=none&videoEmbeddable=true&channelId='.$strChannelID.'&part=snippet&key='.$this->strYoutubeClientID);
+						if($mixRequest){
+							$arrLiveData[$strYoutube] = json_decode($mixRequest, true);
+						}		
+					}
+					
+				}
+
+			}
+		}
+		
+		//Now combine the results
+			
+		foreach($arrAccounts as $key => $val){
+			if($val['stream_type'] != 'youtube') continue;
+			
+			if(isset($arrLiveData[$val['stream_username']]) && count($arrLiveData[$val['stream_username']]['items']) > 0){
+				$arrTmpData = $arrLiveData[$val['stream_username']]['items'][0];
+				$intViewers = 0;
+				
+				if(isset($arrTmpData['id']['videoId'])){
+					$mixRequest = register('urlfetcher')->fetch('https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails&id='.$arrTmpData['id']['videoId'].'&fields=items%2FliveStreamingDetails%2FconcurrentViewers&key='.$this->strYoutubeClientID);
+					if($mixRequest){
+						$arrResult = json_decode($mixRequest, true);
+						$intViewers = $arrResult['items'][0]['liveStreamingDetails']['concurrentViewers'];
+					}
+				}
+				
+				$arrAccounts[$key]['stream_username_display'] = $arrTmpData['snippet']['channelTitle'];
+				$arrAccounts[$key]['stream_live'] = 1;
+				$arrAccounts[$key]['stream_game'] = $arrTmpData['snippet']['title'];
+				$arrAccounts[$key]['stream_viewer'] = $intViewers;
+				$arrAccounts[$key]['stream_avatar'] = $arrChannelData[$val['stream_username']]['items'][0]['snippet']['thumbnails']['default']['url'];
+				$arrAccounts[$key]['stream_background'] = $arrTmpData['snippet']['thumbnails']['high']['url'];
+				$arrAccounts[$key]['stream_videoid'] = $arrTmpData['snippet']['channelId'];
+				
+			} else {
+				$arrTmpData = $arrChannelData[$val['stream_username']]['items'][0];
+				
+				$arrAccounts[$key]['stream_username_display'] = $arrTmpData['snippet']['title'];
+				$arrAccounts[$key]['stream_live'] = 0;
+				$arrAccounts[$key]['stream_game'] = '';
+				$arrAccounts[$key]['stream_viewer'] = 0;
+				$arrAccounts[$key]['stream_avatar'] = $arrTmpData['snippet']['thumbnails']['default']['url'];
+				$arrAccounts[$key]['stream_background'] = $arrTmpData['snippet']['thumbnails']['high']['url'];
+			}
+		}
+		
+		//Sort by Online, And Displayname
+		
+		return $arrAccounts;
+	}
 	
 }

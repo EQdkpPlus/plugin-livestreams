@@ -55,7 +55,7 @@ class ls_livestreams_portal extends portal_generic {
 
 	public function output() {
 		include_once($this->root_path.'plugins/livestreams/includes/livestream_helper.class.php');
-		$objHelper = register('livestream_helper', array($this->config->get('twitch_clientid', 'livestreams')));
+		$objHelper = register('livestream_helper', array());
 		
 		$arrAccounts = $objHelper->getStreamAccounts();
 		$arrLiveStreamData = $objHelper->queryData($arrAccounts);
@@ -72,7 +72,7 @@ class ls_livestreams_portal extends portal_generic {
 			if($this->config->get('open_platform', 'livestreams')){
 				$link = '<a href="'.sanitize($arrStreamData['stream_link']).'">';
 			} else {
-				$link = '<a href="'.$this->routing->build('livestreams').'&stream='.sanitize($arrStreamData['stream_username']).'&type='.sanitize($arrStreamData['stream_type']).'">';
+				$link = '<a href="'.$this->routing->build('livestreams').'&stream='.sanitize($arrStreamData['stream_username']).'&type='.sanitize($arrStreamData['stream_type']).'&videoid='.sanitize($arrStreamData['stream_videoid']).'">';
 			}
 			
 			$myOut .= '<div class="tr">';

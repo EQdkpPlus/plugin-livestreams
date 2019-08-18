@@ -50,7 +50,7 @@ class livestreams_pageobject extends pageobject {
   
   public function display(){
 		include_once($this->root_path.'plugins/livestreams/includes/livestream_helper.class.php');
-		$objHelper = register('livestream_helper', array($this->config->get('twitch_clientid', 'livestreams')));
+		$objHelper = register('livestream_helper', array());
   	
 		$arrAccounts = $objHelper->getStreamAccounts();
 		$arrLiveStreamData = $objHelper->queryData($arrAccounts);
@@ -77,6 +77,7 @@ class livestreams_pageobject extends pageobject {
 				'STREAM_VIEWS' 	=> sanitize($arrStreamData['stream_viewer']),
 				'BACKGROUND' 	=> sanitize($arrStreamData['stream_background']),
 				'STREAM_AVATAR' => sanitize($arrStreamData['stream_avatar']),
+				'STREAM_VIDEOID' => (isset($arrStreamData['stream_videoid'])) ? sanitize($arrStreamData['stream_videoid']) : sanitize($arrStreamData['stream_username']),
   			));
 			$intStreamCount = $intStreamCount+1;
 		}
@@ -87,6 +88,7 @@ class livestreams_pageobject extends pageobject {
   			'SHOW_STREAMNAME' => sanitize($this->in->get('stream')),
   			'S_OPEN_PLATFORM' => $this->config->get('open_platform', 'livestreams'),
   			'SHOW_STREAMTYPE' => sanitize($this->in->get('type')),
+  			'SHOW_STREAMVIDEOID' => ($this->in->get('videoid') != "") ? $this->in->get('videoid') : $this->in->get('stream')
   		));
 
   		
