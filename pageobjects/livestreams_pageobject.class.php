@@ -73,7 +73,7 @@ class livestreams_pageobject extends pageobject {
 				'USERNAME'	=> $arrStreamData['username'],
 				'USERLINK'	=> $arrStreamData['userlink'],
 				'STREAM_GAME' 	=> sanitize($arrStreamData['stream_game']),
-				'STREAM_START' 	=> $this->time->nice_date($arrStreamData['stream_start']),
+				'STREAM_START' 	=> (isset($arrStreamData['stream_start'])) ? $this->time->nice_date($arrStreamData['stream_start']) : '',
 				'STREAM_VIEWS' 	=> sanitize($arrStreamData['stream_viewer']),
 				'BACKGROUND' 	=> sanitize($arrStreamData['stream_background']),
 				'STREAM_AVATAR' => sanitize($arrStreamData['stream_avatar']),

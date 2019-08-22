@@ -72,7 +72,7 @@ class ls_livestreams_portal extends portal_generic {
 			if($this->config->get('open_platform', 'livestreams')){
 				$link = '<a href="'.sanitize($arrStreamData['stream_link']).'">';
 			} else {
-				$link = '<a href="'.$this->routing->build('livestreams').'&stream='.sanitize($arrStreamData['stream_username']).'&type='.sanitize($arrStreamData['stream_type']).'&videoid='.sanitize($arrStreamData['stream_videoid']).'">';
+				$link = '<a href="'.$this->routing->build('livestreams').'&stream='.sanitize($arrStreamData['stream_username']).'&type='.sanitize($arrStreamData['stream_type']).((isset($arrStreamData['stream_videoid'])) ? '&videoid='.sanitize($arrStreamData['stream_videoid']) : '').'">';
 			}
 			
 			$myOut .= '<div class="tr">';
