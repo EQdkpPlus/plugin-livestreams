@@ -21,7 +21,8 @@
 
 class livestream_helper extends gen_class {
 	
-	private $strTwitchClientID = "xz3zsp1i87vb6l4uw8fj40rvhzcvvm";
+	private $strTwitchClientID = "";
+	private $strTwitchClientSecret = "";
 	private $strYoutubeClientID = "";
 	private $intCacheMinutes = 5;
 	
@@ -29,6 +30,11 @@ class livestream_helper extends gen_class {
 		$strTwitchClientID = $this->config->get('twitch_clientid', 'livestreams');
 		if($strTwitchClientID && $strTwitchClientID != "") {
 			$this->strTwitchClientID = $strTwitchClientID;
+		}
+		
+		$strTwitchClientSecret = $this->config->get('twitch_clientsecret', 'livestreams');
+		if($strTwitchClientSecret && $strTwitchClientSecret != "") {
+			$this->strTwitchClientSecret = $strTwitchClientSecret;
 		}
 		
 		$strYoutubeClientID = $this->config->get('youtube_clientid', 'livestreams');
@@ -253,8 +259,11 @@ class livestream_helper extends gen_class {
 		$arrReturnData = array();
 		
 		if(count($arrTwitchUsers)){
+			//Is there an token?
+			$strToken = $this->handleTwitchToken();
+			
 			//Query User Information
-			$mixRequest = register('urlfetcher')->fetch('https://api.twitch.tv/helix/users?login='.implode('&login=', $arrTwitchUsers), array('Client-ID: '.$this->strTwitchClientID));
+			$mixRequest = register('urlfetcher')->fetch('https://api.twitch.tv/helix/users?login='.implode('&login=', $arrTwitchUsers), array('Authorization: Bearer '.$strToken, 'Client-ID: '.$this->strTwitchClientID));
 			
 			$arrUserIDToLogin = array();
 			
@@ -268,7 +277,7 @@ class livestream_helper extends gen_class {
 			
 			//Query Stream Information
 			$arrGames = array();
-			$mixRequest = register('urlfetcher')->fetch('https://api.twitch.tv/helix/streams?user_login='.implode('&user_login=', $arrTwitchUsers), array('Client-ID: '.$this->strTwitchClientID));
+			$mixRequest = register('urlfetcher')->fetch('https://api.twitch.tv/helix/streams?user_login='.implode('&user_login=', $arrTwitchUsers), array('Authorization: Bearer '.$strToken, 'Client-ID: '.$this->strTwitchClientID));
 			if ($mixRequest){
 				$arrResponseData = json_decode($mixRequest, true);
 				foreach($arrResponseData['data'] as $arrStreamData){
@@ -280,7 +289,7 @@ class livestream_helper extends gen_class {
 			}
 			
 			//Query Games Information
-			$mixRequest = register('urlfetcher')->fetch('https://api.twitch.tv/helix/games?id='.implode('&id=', $arrGames), array('Client-ID: '.$this->strTwitchClientID));
+			$mixRequest = register('urlfetcher')->fetch('https://api.twitch.tv/helix/games?id='.implode('&id=', $arrGames), array('Authorization: Bearer '.$strToken, 'Client-ID: '.$this->strTwitchClientID));
 			$arrGameIDs = array();
 			if ($mixRequest){
 				$arrResponseData = json_decode($mixRequest, true);
@@ -410,6 +419,33 @@ class livestream_helper extends gen_class {
 		//Sort by Online, And Displayname
 		
 		return $arrAccounts;
+	}
+	
+	private function handleTwitchToken(){
+		$clientID = $this->strTwitchClientID;
+		$clientSecret = $this->strTwitchClientSecret;
+		
+		$arrToken = $this->config->get('twitch_token', 'livestreams');
+		
+		if($arrToken == false || $arrToken['_expire_time'] <= $this->time->time){
+			//Refresh
+			if($clientID == "" || $clientSecret == "") return false;
+			
+			$mixRequest = register('urlfetcher')->post('https://id.twitch.tv/oauth2/token?client_id='.$clientID.'&client_secret='.$clientSecret.'&grant_type=client_credentials', array());
+			if($mixRequest){
+				$arrResponse = json_decode($mixRequest, true);
+				$strToken = $arrResponse['access_token'];
+				
+				$arrResponse['_expire_time'] = $this->time->time + (int)$arrResponse['expires_in'] - 120;
+				
+				$this->config->set('twitch_token', $arrResponse, 'livestreams');
+				
+				return $strToken;
+			}
+			
+			return false;
+		}
+		return $arrToken['access_token'];
 	}
 	
 }

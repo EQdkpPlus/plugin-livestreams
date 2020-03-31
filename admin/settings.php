@@ -82,6 +82,14 @@ class livestreamsSettings extends page_generic
   		$this->arrData = $arrValues;
   	} else {  
   		$messages = array();
+  		
+  		$old['twitch_clientid'] = $this->config->get('twitch_clientid', 'livestreams');
+  		$old['twitch_clientsecret'] = $this->config->get('twitch_clientsecret', 'livestreams');
+  		
+  		if($old['twitch_clientid'] != $arrValues['twitch_clientid'] || $old['twitch_clientsecret'] != $arrValues['twitch_clientsecret']){
+  			$this->config->del('twitch_token', 'livestreams');
+  		}
+  		
 	  	// update configuration
 	    $this->config->set($arrValues, '', 'livestreams');
 	    // Success message
@@ -111,6 +119,9 @@ class livestreamsSettings extends page_generic
   						'cols'		=> 80,
   				),
   				'twitch_clientid' => array(
+  						'type'		=> 'text',
+  				),
+  				'twitch_clientsecret' => array(
   						'type'		=> 'text',
   				),
   		),
