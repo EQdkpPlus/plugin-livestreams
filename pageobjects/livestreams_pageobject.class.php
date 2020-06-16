@@ -88,7 +88,8 @@ class livestreams_pageobject extends pageobject {
   			'SHOW_STREAMNAME' => sanitize($this->in->get('stream')),
   			'S_OPEN_PLATFORM' => $this->config->get('open_platform', 'livestreams'),
   			'SHOW_STREAMTYPE' => sanitize($this->in->get('type')),
-  			'SHOW_STREAMVIDEOID' => ($this->in->get('videoid') != "") ? $this->in->get('videoid') : $this->in->get('stream')
+  			'SHOW_STREAMVIDEOID' => ($this->in->get('videoid') != "") ? $this->in->get('videoid') : $this->in->get('stream'),
+  			'LS_PARENT'		=> parse_url($this->env->buildlink(false), PHP_URL_HOST),
   		));
 
   		

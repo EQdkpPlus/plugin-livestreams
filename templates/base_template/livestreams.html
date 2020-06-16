@@ -130,7 +130,7 @@ function openDialog(strChannelTitle){
 
 function openEmbedded(strChannelname, strChannelTitle, strChannelType){
 	if(strChannelType == 'twitch'){
-		$('#dialog-twitch-embedded').html('<iframe src="https://player.twitch.tv/?channel='+strChannelname+'" scrolling="no" frameborder="0" allowfullscreen="" style="height: 99%; width:100%"></iframe>');
+		$('#dialog-twitch-embedded').html('<iframe src="https://player.twitch.tv/?channel='+strChannelname+'&amp;parent={LS_PARENT}" scrolling="no" frameborder="0" allowfullscreen="" style="height: 99%; width:100%"></iframe>');
 	}
 	if(strChannelType == 'mixer'){
 		$('#dialog-twitch-embedded').html('<iframe src="https://mixer.com/embed/player/'+strChannelname+'" scrolling="no" frameborder="0" allowfullscreen="" style="height: 99%; width:100%"></iframe>');
