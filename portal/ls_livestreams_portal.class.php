@@ -78,7 +78,7 @@ class ls_livestreams_portal extends portal_generic {
 			$myOut .= '<div class="tr">';
 			
 			$myOut .= '<div class="td" style="width: 28px;">'.$link.'<div class="user-avatar-small user-avatar-border">';
-			if($arrStreamData['stream_avatar']) $myOut .='<img src="'.sanitize($arrStreamData['stream_avatar']).'" class="user-avatar small"/>';
+			if($arrStreamData['stream_avatar']) $myOut .='<img src="'.sanitize($arrStreamData['stream_avatar']).'" class="user-avatar small" loading="lazy"/>';
 			
 			$myOut .= '</div></a>';
 			$myOut .= '</div>';
