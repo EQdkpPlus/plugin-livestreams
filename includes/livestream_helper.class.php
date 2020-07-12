@@ -68,23 +68,6 @@ class livestream_helper extends gen_class {
 				);
 			}
 			
-			$strMixer = trim($this->pdh->get('user', 'profilefield_by_name', array($intUserID, 'mixer', false, true)));
-			
-			if($strMixer && $strMixer != ""){
-				
-				$strUsername = $this->pdh->get('user', 'name', array($intUserID));
-				
-				$arrAccounts[] = array(
-						'username' 			=> $strUsername,
-						'userlink' 			=> $this->routing->build('user', $strUsername, 'u'.$intUserID),
-						'stream_type'		=> 'mixer',
-						'stream_icon'		=> '<img src="'.$this->server_path.'plugins/livestreams/images/mixer.png" title="Mixer" style="height: 20px;" />',
-						'stream_link'		=> 'https://mixer.com/'.str_replace('https://mixer.com/', '', sanitize(utf8_strtolower($strMixer))),
-						'stream_username' 	=> str_replace('https://mixer.com/', '', utf8_strtolower($strMixer)),
-						'stream_username_display' => str_replace('https://mixer.com/', '', utf8_strtolower($strMixer)),
-				);
-			}
-			
 			$strYoutube = trim($this->pdh->get('user', 'profilefield_by_name', array($intUserID, 'youtube', false, true)));
 			
 			if($strYoutube && $strYoutube != ""){
@@ -130,27 +113,6 @@ class livestream_helper extends gen_class {
 			);
 		}
 		
-		$strAdditionalAccounts = $this->config->get('mixer_streams', 'livestreams');
-		if(strlen($strAdditionalAccounts)){
-			$arrParts = explode("\r\n", $strAdditionalAccounts);
-		} else {
-			$arrParts = array();
-		}
-		
-		foreach($arrParts as $strMixer){
-			$strMixer = trim($strMixer);
-			if($strMixer == "") continue;
-			
-			$arrAccounts[] = array(
-					'username' 		=> '',
-					'userlink' 		=> '',
-					'stream_type'		=> 'mixer',
-					'stream_icon'		=> '<img src="'.$this->server_path.'plugins/livestreams/images/mixer.png" title="Mixer" style="height: 20px;" />',
-					'stream_link'		=> 'https://mixer.com/'.str_replace('https://mixer.com/', '', sanitize(utf8_strtolower($strMixer))),
-					'stream_username' 	=> str_replace('https://mixer.com/', '', utf8_strtolower($strMixer)),
-			);
-		}
-		
 		$strAdditionalAccounts = $this->config->get('youtube_streams', 'livestreams');
 		if(strlen($strAdditionalAccounts)){
 			$arrParts = explode("\r\n", $strAdditionalAccounts);
@@ -188,7 +150,6 @@ class livestream_helper extends gen_class {
 		}
 		
 		$arrAccounts = $this->queryTwitch($arrAccounts);
-		$arrAccounts = $this->queryMixer($arrAccounts);
 		if($this->strYoutubeClientID != "") $arrAccounts = $this->queryYoutube($arrAccounts);
 		
 		$arrSortOnline = $arrSortUsername = array();
@@ -200,48 +161,6 @@ class livestream_helper extends gen_class {
 		array_multisort($arrSortOnline, SORT_DESC, SORT_NUMERIC, $arrSortUsername, SORT_ASC, SORT_REGULAR, $arrAccounts);
 		
 		$this->pdc->put('plugin.livestream.accounts.'.$this->user->id,$arrAccounts,(60*$this->intCacheMinutes));
-		
-		return $arrAccounts;
-	}
-	
-	
-	public function queryMixer($arrAccounts){
-		$arrMixerUsers = array();
-		foreach($arrAccounts as $arrData){
-			if($arrData['stream_type'] != 'mixer') continue;
-			
-			$arrMixerUsers[] = $arrData['stream_username'];
-		}
-		
-		$arrMixerUsers = array_unique($arrMixerUsers);
-		
-		$arrReturnData = array();
-		
-		if(count($arrMixerUsers)){
-			$arrQueryData = array();
-			foreach($arrMixerUsers as $strMixername){
-				$mixRequest = register('urlfetcher')->fetch('https://mixer.com/api/v1/channels/'.$strMixername);
-				if($mixRequest){
-					$arrQueryData[$strMixername] = json_decode($mixRequest, true);
-				}
-			}
-		}
-		
-		
-		//Now combine the results
-		
-		foreach($arrAccounts as $key => $val){
-			if($val['stream_type'] != 'mixer') continue;
-			#$arrAccounts[$key]['stream_data'] = $arrQueryData[$val['stream_username']];
-			$arrAccounts[$key]['stream_username_display'] = $arrQueryData[$val['stream_username']]['token'];
-			$arrAccounts[$key]['stream_live'] = ($arrQueryData[$val['stream_username']]['online']) ? 1 : 0;
-			$arrAccounts[$key]['stream_game'] = ($arrQueryData[$val['stream_username']]['type']['name']) ? $arrQueryData[$val['stream_username']]['type']['name'] : '';
-			$arrAccounts[$key]['stream_viewer'] = ($arrQueryData[$val['stream_username']]['viewersCurrent']) ? $arrQueryData[$val['stream_username']]['viewersCurrent'] : 0;
-			$arrAccounts[$key]['stream_avatar'] = $arrQueryData[$val['stream_username']]['user']['avatarUrl'];
-			$arrAccounts[$key]['stream_background'] = ($arrAccounts[$key]['stream_live']) ? 'https://thumbs.mixer.com/channel/'.$arrQueryData[$val['stream_username']]['id'].'.small.jpg' : $arrQueryData[$val['stream_username']]['bannerUrl'];
-		}
-		
-		//Sort by Online, And Displayname
 		
 		return $arrAccounts;
 	}

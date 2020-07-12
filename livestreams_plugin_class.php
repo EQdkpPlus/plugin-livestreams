@@ -104,28 +104,6 @@ class livestreams extends plugin_generic {
 			register('pdh')->put('user_profilefields', 'insert_field', array($arrOptions, array()));
 		}
 		
-		$intMixerFieldID = register('pdh')->get('user_profilefields', 'field_by_name', array('mixer'));
-		
-		//Create Twitch Profilefield
-		if(!$intMixerFieldID){
-			$arrOptions = array(
-					'name' 			=> 'Mixer',
-					'lang_var'		=> '',
-					'type' 			=> 'link',
-					'length'		=> 30,
-					'minlength' 	=> 3,
-					'validation'	=> '[\w_\.]+',
-					'required' 		=> 0,
-					'show_on_registration' => 0,
-					'enabled'		=> 1,
-					'is_contact'	=> 1,
-					'contact_url' 	=> 'https://www.mixer.com/%s',
-					'icon_or_image' => '../plugins/livestreams/images/mixer.png',
-					'bridge_field'	=> null,
-			);
-			
-			register('pdh')->put('user_profilefields', 'insert_field', array($arrOptions, array()));
-		}
 	}
 
 
